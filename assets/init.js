@@ -12,8 +12,6 @@ import { mount as tilt } from '../effects/tilt-card/index.js';
 import { mount as spotlight } from '../effects/spotlight/index.js';
 import { mount as parallax } from '../effects/parallax-layers/index.js';
 import { mount as preview } from '../effects/hover-preview/index.js';
-import { mount as silk } from '../effects/silk-bg/index.js';
-import { mount as reveal } from '../effects/scroll-reveal/index.js';
 
 /**
  * 영역 안쪽 요소에 붙는 효과(tilt/flip/magnetic/scramble)는 옵션을 부모에서 읽습니다.
@@ -69,8 +67,6 @@ function boot() {
   spotlight('[data-fx~="spotlight"]');
   parallax('[data-fx~="parallax"]');
   preview('[data-fx~="preview"]');
-  silk('[data-fx~="silk"]');
-  reveal('[data-fx~="reveal"]');
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
