@@ -1,0 +1,147 @@
+/**
+ * tilt-card / style.css
+ * _core/core.css 를 먼저 불러온 뒤 이 파일을 불러오세요.
+ */
+
+/* ================================================================== *
+ * 1. 기능부 (필수)
+ * ================================================================== */
+
+.fx-tilt-card {
+  position: relative;
+  /* 자식의 translateZ가 살아나려면 반드시 필요합니다. */
+  transform-style: preserve-3d;
+
+  transform:
+    perspective(var(--fx-tilt-perspective, 900px))
+    rotateX(var(--fx-tilt-rx, 0deg))
+    rotateY(var(--fx-tilt-ry, 0deg))
+    scale3d(var(--fx-tilt-scale, 1), var(--fx-tilt-scale, 1), 1);
+
+  /* 3D 회전 시 뒷면 렌더링 비용을 없앱니다. */
+  backface-visibility: hidden;
+}
+
+/*
+ * will-change는 "상호작용 중에만" 겁니다.
+ * 카드 20장에 상시로 걸면 각각 별도 GPU 레이어가 생겨 메모리를 크게 먹습니다.
+ * JS가 pointerenter에서 data-fx-tilting="1"을 세팅합니다.
+ */
+.fx-tilt-card[data-fx-tilting='1'] {
+  will-change: transform;
+}
+
+/* ------------------------------------------------------------------ *
+ * 깊이 레이어 — data-fx-depth="숫자" 를 가진 자식
+ *
+ * translateZ로 실제 3D 높이를 주고,
+ * 포인터 방향(-1~1)에 비례해 살짝 반대로 밀어서 시차(parallax)를 만듭니다.
+ * 이 두 개가 겹쳐야 "떠 있다"는 느낌이 납니다.
+ * ------------------------------------------------------------------ */
+.fx-tilt-card [data-fx-depth] {
+  transform: translate3d(
+    calc(var(--fx-tilt-nx, 0) * var(--fx-depth, 0) * -0.22px),
+    calc(var(--fx-tilt-ny, 0) * var(--fx-depth, 0) * -0.22px),
+    calc(var(--fx-depth, 0) * 1px)
+  );
+  /* 레이어는 부모보다 아주 살짝 늦게 따라오면 더 입체적으로 보입니다. */
+  transition: transform 80ms linear;
+}
+
+/* ------------------------------------------------------------------ *
+ * 글레어 — 포인터 위치를 따라다니는 빛 반사
+ * ------------------------------------------------------------------ */
+.fx-tilt-card__glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  overflow: hidden;
+
+  background: radial-gradient(
+    circle at var(--fx-tilt-px, 50%) var(--fx-tilt-py, 50%),
+    var(--fx-glare) 0%,
+    transparent 60%
+  );
+
+  opacity: var(--fx-tilt-glare-o, 0);
+
+  /* glareZ만큼 띄우고, 원근으로 커진 만큼 역보정해 카드를 정확히 덮습니다. */
+  transform:
+    translateZ(var(--fx-tilt-glare-z, 0px))
+    scale(var(--fx-tilt-glare-scale, 1));
+
+  /* 취향에 따라 켜세요. 밝은 배경에서 더 자연스럽습니다.
+     mix-blend-mode: soft-light; */
+}
+
+/* ------------------------------------------------------------------ *
+ * 가드에 걸려 꺼진 상태 (모바일 / 동작 줄이기)
+ * 3D는 사라지지만 레이아웃은 그대로 유지되어야 합니다.
+ * ------------------------------------------------------------------ */
+.fx-inert .fx-tilt-card__glare,
+.fx-tilt-card.fx-inert .fx-tilt-card__glare {
+  display: none;
+}
+
+.fx-tilt-card.fx-inert [data-fx-depth] {
+  transform: none;
+}
+
+/* ================================================================== *
+ * 2. 선택 사항 — 기본 카드 스킨
+ *
+ * 이미 카드 디자인이 있으면 이 블록은 지우세요.
+ * 바로 써보고 싶을 때만 class="fx-card"를 같이 붙이면 됩니다.
+ * ================================================================== */
+
+.fx-card {
+  display: block;
+  border-radius: var(--fx-radius, 16px);
+  background: var(--fx-surface);
+  border: 1px solid var(--fx-border);
+  box-shadow: var(--fx-shadow);
+  color: var(--fx-text);
+  padding: 20px;
+  text-decoration: none;
+  transition: box-shadow var(--fx-duration-fast) var(--fx-ease);
+}
+
+.fx-card[data-fx-tilting='1'] {
+  box-shadow: 0 26px 50px -20px rgba(16, 18, 29, 0.42);
+}
+
+.fx-card__media {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: calc(var(--fx-radius, 16px) - 8px);
+  background: var(--fx-surface-2);
+  margin-bottom: 16px;
+}
+
+.fx-card__title {
+  margin: 0 0 6px;
+  font-size: 1.0625rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.fx-card__desc {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--fx-text-dim);
+}
+
+.fx-card__tag {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--fx-accent);
+  background: color-mix(in srgb, var(--fx-accent) 12%, transparent);
+}

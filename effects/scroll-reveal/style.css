@@ -1,0 +1,147 @@
+/**
+ * scroll-reveal / style.css
+ * _core/core.css 를 먼저 불러오세요.
+ *
+ * ★ 이 파일에서 가장 중요한 사실
+ *   "숨김" 상태는 .fx-scroll-reveal 클래스에만 걸려 있습니다.
+ *   이 클래스는 JS가 마운트에 성공했을 때만 붙습니다.
+ *   → JS가 죽으면 콘텐츠가 사라지는 게 아니라, 그냥 애니메이션 없이 보입니다.
+ *   콘텐츠를 CSS로 미리 숨겨두는 리빌 라이브러리는 JS 로드 실패 시
+ *   페이지 전체가 백지가 됩니다. 그 사고를 구조적으로 막았습니다.
+ */
+
+/* ================================================================== *
+ * 1. 공통
+ * ================================================================== */
+
+.fx-scroll-reveal {
+  opacity: 0;
+  transition:
+    opacity var(--fx-reveal-duration, 700ms) var(--fx-ease-out) var(--fx-reveal-delay, 0ms),
+    transform var(--fx-reveal-duration, 700ms) var(--fx-ease-out) var(--fx-reveal-delay, 0ms);
+  /*
+   * will-change를 일부러 쓰지 않습니다.
+   * opacity와 transform은 이미 컴포지터에서 처리되고,
+   * 리빌 대상은 보통 수십 개라 상시 레이어를 만들면 메모리만 먹습니다.
+   */
+}
+
+.fx-scroll-reveal.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* ================================================================== *
+ * 2. 프리셋 — 숨김 상태의 transform
+ * ================================================================== */
+
+/* rise — 아래에서 위로. 가장 무난하고 어디에나 어울립니다. */
+.fx-scroll-reveal[data-fx-preset='rise'] {
+  transform: translate3d(0, var(--fx-reveal-distance, 28px), 0);
+}
+
+/* depth — 뒤에서 앞으로 다가옵니다. 진짜 Z축 이동입니다. */
+.fx-scroll-reveal[data-fx-preset='depth'] {
+  transform:
+    perspective(var(--fx-reveal-perspective, 1000px))
+    translate3d(0, calc(var(--fx-reveal-distance, 28px) * 0.4), var(--fx-reveal-depth, -140px))
+    scale(var(--fx-reveal-scale, 0.92));
+}
+
+/* flip — 바닥에서 카드가 일어섭니다. 그리드 카드에 잘 어울립니다. */
+.fx-scroll-reveal[data-fx-preset='flip'] {
+  transform-origin: 50% 100%;
+  transform:
+    perspective(var(--fx-reveal-perspective, 1000px))
+    rotateX(var(--fx-reveal-rotate, 22deg))
+    translate3d(0, calc(var(--fx-reveal-distance, 28px) * 0.5), 0);
+}
+
+/* swing — 옆에서 문이 열리듯. 타임라인/리스트 항목에 어울립니다. */
+.fx-scroll-reveal[data-fx-preset='swing'] {
+  transform-origin: 0% 50%;
+  transform:
+    perspective(var(--fx-reveal-perspective, 1000px))
+    rotateY(calc(var(--fx-reveal-rotate, 22deg) * -1))
+    translate3d(calc(var(--fx-reveal-distance, 28px) * -0.5), 0, 0);
+}
+
+/* zoom — 살짝 커지며 등장. 이미지에 어울립니다. */
+.fx-scroll-reveal[data-fx-preset='zoom'] {
+  transform: scale(var(--fx-reveal-scale, 0.92));
+}
+
+/* ================================================================== *
+ * 3. scrub 모드 — CSS 스크롤 기반 애니메이션
+ *
+ * 메인 스레드 JS가 0줄입니다. 스크롤이 아무리 무거워도 이 애니메이션은
+ * 절대 끊기지 않습니다(컴포지터 스레드에서 처리).
+ *
+ * 2026년 7월 기준: Chrome/Edge 115+, Firefox 132+, Safari 18+
+ * 글로벌 지원율 약 84%. Baseline에는 아직 미달입니다.
+ * → @supports로 감싸고, 미지원 브라우저는 JS가 once 모드로 자동 강등합니다.
+ * ================================================================== */
+
+@supports (animation-timeline: view()) {
+  .fx-scroll-reveal[data-fx-mode='scrub'] {
+    /* 트랜지션 대신 애니메이션이 상태를 관장합니다. */
+    transition: none;
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: view();
+    animation-range: var(--fx-reveal-start, entry 10%) var(--fx-reveal-end, cover 40%);
+  }
+
+  .fx-scroll-reveal[data-fx-mode='scrub'][data-fx-preset='rise']  { animation-name: fx-reveal-rise; }
+  .fx-scroll-reveal[data-fx-mode='scrub'][data-fx-preset='depth'] { animation-name: fx-reveal-depth; }
+  .fx-scroll-reveal[data-fx-mode='scrub'][data-fx-preset='flip']  { animation-name: fx-reveal-flip; }
+  .fx-scroll-reveal[data-fx-mode='scrub'][data-fx-preset='swing'] { animation-name: fx-reveal-swing; }
+  .fx-scroll-reveal[data-fx-mode='scrub'][data-fx-preset='zoom']  { animation-name: fx-reveal-zoom; }
+}
+
+@keyframes fx-reveal-rise {
+  from { opacity: 0; transform: translate3d(0, var(--fx-reveal-distance, 28px), 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes fx-reveal-depth {
+  from {
+    opacity: 0;
+    transform:
+      perspective(var(--fx-reveal-perspective, 1000px))
+      translate3d(0, calc(var(--fx-reveal-distance, 28px) * 0.4), var(--fx-reveal-depth, -140px))
+      scale(var(--fx-reveal-scale, 0.92));
+  }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fx-reveal-flip {
+  from {
+    opacity: 0;
+    transform:
+      perspective(var(--fx-reveal-perspective, 1000px))
+      rotateX(var(--fx-reveal-rotate, 22deg))
+      translate3d(0, calc(var(--fx-reveal-distance, 28px) * 0.5), 0);
+  }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fx-reveal-swing {
+  from {
+    opacity: 0;
+    transform:
+      perspective(var(--fx-reveal-perspective, 1000px))
+      rotateY(calc(var(--fx-reveal-rotate, 22deg) * -1))
+      translate3d(calc(var(--fx-reveal-distance, 28px) * -0.5), 0, 0);
+  }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fx-reveal-zoom {
+  from { opacity: 0; transform: scale(var(--fx-reveal-scale, 0.92)); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* flip/swing은 회전 기준점이 필요하므로 keyframes 밖에서 유지합니다. */
+.fx-scroll-reveal[data-fx-mode='scrub'][data-fx-preset='flip']  { transform-origin: 50% 100%; }
+.fx-scroll-reveal[data-fx-mode='scrub'][data-fx-preset='swing'] { transform-origin: 0% 50%; }

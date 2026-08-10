@@ -1,0 +1,131 @@
+/**
+ * silk-bg / style.css
+ * _core/core.css 를 먼저 불러오세요.
+ *
+ * ★ 핵심: CSS 그라디언트 폴백이 "항상" 깔려 있습니다.
+ *   캔버스는 그 위에 얹힐 뿐입니다.
+ *   WebGL이 없든, OGL 로드가 실패하든, 동작 줄이기든 —
+ *   어떤 경우에도 빈 화면이 나오지 않습니다.
+ */
+
+/* ================================================================== *
+ * 1. 컨테이너 — 이 클래스는 사용자가 직접 붙입니다(JS와 무관)
+ * ================================================================== */
+
+.fx-silk {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  /* 셰이더와 동일한 색. JS가 옵션으로 색을 받으면 이 변수를 덮어씁니다. */
+  --fx-silk-c1: #1b1d3a;
+  --fx-silk-c2: #5b5bd6;
+  --fx-silk-c3: #a78bfa;
+
+  /* 폴백 그라디언트 — 셰이더 무늬를 대략 흉내 냅니다 */
+  background-color: var(--fx-silk-c1);
+  background-image:
+    radial-gradient(120% 90% at 18% 12%, var(--fx-silk-c2) 0%, transparent 58%),
+    radial-gradient(100% 80% at 82% 78%, var(--fx-silk-c3) 0%, transparent 55%),
+    radial-gradient(90% 70% at 55% 45%, color-mix(in srgb, var(--fx-silk-c2) 55%, var(--fx-silk-c3)) 0%, transparent 62%);
+}
+
+/* ================================================================== *
+ * 2. 캔버스
+ * ================================================================== */
+
+.fx-silk-bg__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* 배경 위의 콘텐츠가 클릭 가능해야 합니다 */
+  pointer-events: none;
+
+  /* 셰이더 첫 프레임이 그려지기 전 깜빡임을 막습니다 */
+  opacity: 0;
+  transition: opacity 600ms var(--fx-ease-out);
+}
+
+.fx-silk-bg--ready .fx-silk-bg__canvas {
+  opacity: 1;
+}
+
+/* 컨텍스트 손실 시: 캔버스를 감추면 아래의 CSS 그라디언트가 드러납니다 */
+.fx-silk-bg--lost .fx-silk-bg__canvas {
+  opacity: 0;
+}
+
+/* 배경 위 콘텐츠는 반드시 캔버스보다 위로.
+   `.fx-layer`(배경 레이어 공용 표식)는 건너뜁니다 — 같은 영역에 함께 걸린
+   다른 팩의 배경까지 콘텐츠로 끌어올리면 서로를 망칩니다. */
+.fx-silk > *:not(.fx-layer) {
+  position: relative;
+  z-index: 1;
+}
+
+/* ================================================================== *
+ * 3. 선택 사항 — 배경 위 가독성 보정
+ *
+ * 그라디언트 배경 위의 흰 글씨는 밝은 영역에서 읽히지 않습니다.
+ * 어두운 오버레이를 한 겹 깔면 어느 프레임에서도 대비가 유지됩니다.
+ * ================================================================== */
+
+.fx-silk--scrim::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.45)
+  );
+}
+
+/* 밝은 배경 위 어두운 글씨용 */
+.fx-silk--scrim-light::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.25),
+    rgba(255, 255, 255, 0.55)
+  );
+}
+
+/* ================================================================== *
+ * 4. 선택 사항 — 히어로 레이아웃
+ * ================================================================== */
+
+.fx-silk-hero {
+  display: grid;
+  place-items: center;
+  min-height: min(80vh, 760px);
+  border-radius: var(--fx-radius, 16px);
+  padding: 40px 24px;
+  text-align: center;
+  color: #fff;
+}
+
+.fx-silk-hero h1 {
+  margin: 0 0 14px;
+  font-size: clamp(2rem, 6vw, 4.2rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+  /* 밝은 무늬 위에서도 글자가 뜨도록 아주 약한 그림자 */
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+}
+
+.fx-silk-hero p {
+  margin: 0;
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  color: rgba(255, 255, 255, 0.82);
+}

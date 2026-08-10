@@ -1,0 +1,105 @@
+/**
+ * parallax-layers / style.css
+ * _core/core.css 를 먼저 불러오세요.
+ */
+
+/* ================================================================== *
+ * 1. 기능부 (필수)
+ * ================================================================== */
+
+.fx-parallax-layers {
+  position: relative;
+  /* depth 옵션을 쓸 때만 의미가 있지만, 켜두어도 비용은 없습니다. */
+  perspective: var(--fx-plx-perspective, 1200px);
+  transform-style: preserve-3d;
+}
+
+/*
+ * 레이어 하나의 최종 이동량 =
+ *   가로 : 마우스X × 계수 × mx
+ *   세로 : 마우스Y × 계수 × my  +  스크롤진행도 × 계수 × sy
+ *   높이 : 계수 × z
+ *
+ * JS는 컨테이너에 --fx-plx-x / -y / -s 세 개만 씁니다.
+ * 나머지 곱셈은 브라우저(CSS calc)가 처리하므로 레이어가 많아도 비용이 늘지 않습니다.
+ */
+.fx-parallax-layers [data-fx-layer] {
+  transform: translate3d(
+    calc(var(--fx-plx-x, 0) * var(--fx-layer, 0) * var(--fx-plx-mx, -26px)),
+    calc(
+      var(--fx-plx-y, 0) * var(--fx-layer, 0) * var(--fx-plx-my, -26px) +
+      var(--fx-plx-s, 0) * var(--fx-layer, 0) * var(--fx-plx-sy, 70px)
+    ),
+    calc(var(--fx-layer, 0) * var(--fx-plx-z, 0px))
+  );
+  will-change: transform;
+}
+
+/* 꺼졌을 때는 모든 레이어를 제자리에 둡니다. */
+.fx-parallax-layers.fx-inert [data-fx-layer] {
+  transform: none;
+  will-change: auto;
+}
+
+/* ================================================================== *
+ * 2. 선택 사항 — 히어로 레이아웃 스타터
+ *
+ * 레이어를 겹쳐 쌓는 가장 흔한 구조입니다.
+ * 이미 히어로 디자인이 있으면 이 블록은 지우세요.
+ * ================================================================== */
+
+.fx-hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: min(78vh, 720px);
+  overflow: hidden;               /* 레이어가 밖으로 새어나가지 않게 */
+  border-radius: var(--fx-radius, 16px);
+  background: var(--fx-surface-2);
+  isolation: isolate;
+}
+
+/* 겹쳐 쌓이는 레이어: 전부 같은 그리드 칸에 배치 */
+.fx-hero > * {
+  grid-area: 1 / 1;
+}
+
+.fx-hero__bg {
+  width: 108%;                    /* 움직여도 가장자리가 비지 않도록 여유분 */
+  height: 108%;
+  object-fit: cover;
+  justify-self: center;
+  align-self: center;
+}
+
+.fx-hero__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 32px;
+  color: var(--fx-text);
+}
+
+.fx-hero__title {
+  margin: 0 0 12px;
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.fx-hero__sub {
+  margin: 0;
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  color: var(--fx-text-dim);
+}
+
+/* 장식용 원형 블롭 — 레이어 계수를 다르게 주면 깊이가 살아납니다 */
+.fx-hero__blob {
+  width: clamp(180px, 30vw, 380px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: blur(46px);
+  opacity: 0.55;
+  pointer-events: none;
+}

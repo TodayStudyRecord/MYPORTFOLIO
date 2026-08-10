@@ -1,0 +1,116 @@
+/**
+ * _core/core.css
+ * 모든 효과가 공유하는 최소한의 기반 스타일.
+ * 이 파일 하나만 먼저 불러오고, 효과별 style.css를 뒤에 붙이면 됩니다.
+ */
+
+/* ------------------------------------------------------------------ *
+ * 공용 토큰
+ * 포트폴리오 테마에 맞춰 :root에서 덮어쓰면 8개 효과가 한꺼번에 따라옵니다.
+ * ------------------------------------------------------------------ */
+:root {
+  --fx-ease: cubic-bezier(0.22, 1, 0.36, 1);      /* 감속 위주, 고급스러운 느낌 */
+  --fx-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --fx-duration: 420ms;
+  --fx-duration-fast: 220ms;
+
+  --fx-radius: 16px;
+  --fx-surface: #ffffff;
+  --fx-surface-2: #f4f5f7;
+  --fx-border: rgba(0, 0, 0, 0.08);
+  --fx-text: #16181d;
+  --fx-text-dim: #6b7280;
+  --fx-accent: #5b5bd6;
+  --fx-glare: rgba(255, 255, 255, 0.55);
+  --fx-shadow: 0 10px 30px -12px rgba(16, 18, 29, 0.28);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fx-surface: #16181d;
+    --fx-surface-2: #1e2027;
+    --fx-border: rgba(255, 255, 255, 0.1);
+    --fx-text: #f2f3f5;
+    --fx-text-dim: #9ca3af;
+    --fx-glare: rgba(255, 255, 255, 0.22);
+    --fx-shadow: 0 12px 34px -14px rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* 사용자가 테마 토글로 강제 지정하는 경우 (html[data-theme]) */
+:root[data-theme='dark'] {
+  --fx-surface: #16181d;
+  --fx-surface-2: #1e2027;
+  --fx-border: rgba(255, 255, 255, 0.1);
+  --fx-text: #f2f3f5;
+  --fx-text-dim: #9ca3af;
+  --fx-glare: rgba(255, 255, 255, 0.22);
+  --fx-shadow: 0 12px 34px -14px rgba(0, 0, 0, 0.7);
+}
+:root[data-theme='light'] {
+  --fx-surface: #ffffff;
+  --fx-surface-2: #f4f5f7;
+  --fx-border: rgba(0, 0, 0, 0.08);
+  --fx-text: #16181d;
+  --fx-text-dim: #6b7280;
+  --fx-glare: rgba(255, 255, 255, 0.55);
+  --fx-shadow: 0 10px 30px -12px rgba(16, 18, 29, 0.28);
+}
+
+/* ------------------------------------------------------------------ *
+ * 마운트 상태 클래스
+ * ------------------------------------------------------------------ */
+
+/* JS가 붙었다는 표시. CSS에서 "JS 없을 때"와 분기할 때 씁니다. */
+.fx {
+  /* 3D 변환 시 텍스트가 흐려지는 것을 줄입니다. */
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * 가드에 걸려 꺼진 상태.
+ * 왜 꺼졌는지는 DOM의 data-fx-skipped 속성에 남습니다.
+ * (devtools에서 요소를 보면 reduced-motion / no-webgl / device-tier 등이 보입니다)
+ */
+.fx-inert {
+  /* 효과가 없어도 레이아웃이 깨지지 않도록 변환만 중립화합니다. */
+  transform: none !important;
+}
+
+/* ------------------------------------------------------------------ *
+ * 안전망
+ * 개별 효과는 각자 가드를 갖지만, CSS 트랜지션까지 남는 경우를 대비합니다.
+ * .fx 하위로만 좁게 적용해 페이지 전체 애니메이션을 건드리지 않습니다.
+ * ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .fx,
+  .fx * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * 접근성: 키보드 포커스는 어떤 3D 효과 위에서도 보여야 합니다.
+ * ------------------------------------------------------------------ */
+.fx :focus-visible,
+.fx:focus-visible {
+  outline: 2px solid var(--fx-accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* 스크린 리더 전용 텍스트(효과 설명 등에 사용) */
+.fx-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
