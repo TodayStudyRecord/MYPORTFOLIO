@@ -60,6 +60,19 @@ function boot() {
     applyMode(!document.querySelector('.wf-page')?.classList.contains('is-dark'));
   });
   try { if (localStorage.getItem(MODE_KEY) === '1') applyMode(true); } catch { /* 저장 불가 환경 */ }
+  {
+    const hideEls = [...document.querySelectorAll('[data-hide-scroll]')].map((el) => el.closest('.wf-headbar') || el);
+    if (hideEls.length) {
+      let lastY = window.scrollY;
+      window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        const dy = y - lastY;
+        lastY = y;
+        if (Math.abs(dy) < 4) return;
+        hideEls.forEach((el) => el.classList.toggle('wf-nav-hidden', dy > 0 && y > 80));
+      }, { passive: true });
+    }
+  }
   document.querySelectorAll('[data-fx~="tilt"]').forEach((el) => {
     const targets = el.querySelectorAll('.wf-card, .wf-main__slot');
     if (targets.length) tilt([...targets], readOpts(el, 'tilt-card'));
