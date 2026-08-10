@@ -35,6 +35,16 @@ function readOpts(el, prefix) {
 }
 
 function boot() {
+  document.querySelectorAll('[data-wf-clock]').forEach((el) => {
+    const tick = () => {
+      try {
+        const hm = new Intl.DateTimeFormat('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: el.dataset.wfClock || undefined }).format(new Date());
+        el.textContent = (el.dataset.wfCity || 'Seoul') + ', ' + hm;
+      } catch { /* 시간대 이름이 틀리면 마지막 값을 그대로 둡니다 */ }
+    };
+    tick();
+    setInterval(tick, 30000);
+  });
   const MODE_KEY = 'pm:dark';
   const applyMode = (dark) => {
     document.querySelectorAll('.wf-page').forEach((p) => {
