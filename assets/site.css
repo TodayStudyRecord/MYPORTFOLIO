@@ -1,6 +1,4 @@
 /* 레이아웃 + 파트 스타일. 편집기 전용 규칙은 걷어냈습니다. */
-@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url(./fonts/inter-400.woff2) format('woff2');}
-@font-face{font-family:'Inter';font-style:normal;font-weight:700;font-display:swap;src:url(./fonts/inter-700.woff2) format('woff2');}
 @font-face{font-family:'Manrope';font-style:normal;font-weight:400;font-display:swap;src:url(./fonts/manrope-400.woff2) format('woff2');}
 @font-face{font-family:'Manrope';font-style:normal;font-weight:700;font-display:swap;src:url(./fonts/manrope-700.woff2) format('woff2');}
 
@@ -658,4 +656,25 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{display:none}
 
 @media (prefers-reduced-motion: reduce) {
   .fx-hover-preview__float { transition: opacity 150ms ease; scale: 1; }
+}
+.badge-ongoing,
+.badge-planning {
+  display: inline-block;
+  width: fit-content;
+  padding: 2px 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  border-radius: 4px;
+}
+
+
+.badge-ongoing {
+  background-color: #e53e3e;
+}
+
+
+.badge-planning {
+  background-color: #dd6b20;
 }
