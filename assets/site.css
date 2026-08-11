@@ -274,11 +274,12 @@ html{scroll-behavior:smooth}
 @keyframes wf-bg-zoom{0%{transform:scale(1)}to{transform:scale(1.03)}}
 .wf-bg--zoom .wf-bg__media{animation:wf-bg-zoom 30s ease-in-out infinite alternate}
 @media (prefers-reduced-motion: reduce){.wf-bg--zoom .wf-bg__media{animation:none}}
-.wf-tfx--chars .wf-tfx__ch{display:inline-block;position:relative;opacity:0;animation:wf-tfx-type 1ms steps(1,end) forwards;animation-delay:calc(var(--tfx-delay, 0ms) + var(--i) * var(--tfx-step, 40ms))}
-@keyframes wf-tfx-type{to{opacity:1}}
-.wf-tfx--chars .wf-tfx__ch:after{content:"";position:absolute;right:-.14em;top:6%;bottom:4%;width:.07em;min-width:2px;background:currentColor;opacity:0;animation:wf-tfx-caret var(--tfx-step, 40ms) steps(1,end) forwards;animation-delay:inherit}
-.wf-tfx--chars .wf-tfx__ch:last-child:after{animation:wf-tfx-caret-end .8s steps(1,end) 3 forwards;animation-delay:inherit}
-@keyframes wf-tfx-caret{0%{opacity:1}to{opacity:0}}
+.wf-tfx--chars .wf-tfx__w{display:inline-block}
+.wf-tfx--chars .wf-tfx__ch{display:inline-block;position:relative;animation:wf-tfx-hide calc(var(--tfx-delay, 0ms) + var(--i, 0) * var(--tfx-step, 40ms)) steps(1,end)}
+@keyframes wf-tfx-hide{0%,to{opacity:0}}
+.wf-tfx--chars .wf-tfx__ch:after{content:"";position:absolute;right:-.14em;top:6%;bottom:4%;width:.07em;min-width:2px;background:currentColor;opacity:0;animation:wf-tfx-caret var(--tfx-step, 40ms) steps(1,end);animation-delay:calc(var(--tfx-delay, 0ms) + var(--i, 0) * var(--tfx-step, 40ms))}
+.wf-tfx--chars .wf-tfx__w:last-child>.wf-tfx__ch:last-child:after{animation:wf-tfx-caret-end .8s steps(1,end) 3;animation-delay:calc(var(--tfx-delay, 0ms) + var(--i, 0) * var(--tfx-step, 40ms))}
+@keyframes wf-tfx-caret{0%,to{opacity:1}}
 @keyframes wf-tfx-caret-end{0%,49%{opacity:1}50%,to{opacity:0}}
 .wf-tfx--up :is(.wf-hero__title,.wf-sec__title,.wf-aside__name,.wf-card__title,.wf-cover__title,.wf-cta__title),.wf-tfx--up.wf-tfx-on--all :is(.wf-hero__sub,.wf-sec__body,.wf-aside__bio){animation:wf-tfx-up .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--tfx-delay, 0ms)}
 @keyframes wf-tfx-up{0%{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
@@ -657,6 +658,7 @@ html::-webkit-scrollbar,body::-webkit-scrollbar{display:none}
 @media (prefers-reduced-motion: reduce) {
   .fx-hover-preview__float { transition: opacity 150ms ease; scale: 1; }
 }
+
 .badge-ongoing,
 .badge-planning {
   display: inline-block;
