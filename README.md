@@ -1,4 +1,4 @@
-# 교육·기획하는 개발자 - WonByeongSeon Portfolio
+# 다양한 경험을 가진 개발자 - WonByeongSeon Portfolio
 
 Portfolio Maker로 만든 정적 사이트입니다. **빌드 도구가 필요 없습니다.**
 
